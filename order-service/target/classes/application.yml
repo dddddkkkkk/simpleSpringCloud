@@ -1,0 +1,25 @@
+server:
+  port: 9021
+spring:
+  cloud:
+    loadbalancer:
+      retry:
+        enabled: true # 开启Spring Cloud的重试功能
+  application:
+    name: order-service
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/shop?useUnicode=true&characterEncoding=utf8
+    username: root
+    password: root
+  jpa:
+    database: MySQL
+    show-sql: true
+    open-in-view: true
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:9000/eureka/,http://localhost:9003/eureka/
+  instance:
+    prefer-ip-address: true # 是否使用ip地址配置
+
