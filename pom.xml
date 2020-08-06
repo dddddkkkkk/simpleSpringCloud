@@ -13,7 +13,8 @@
         <module>order-service</module>
         <module>product-service</module>
         <module>common-service</module>
-        <module>eureka-source-code</module>
+        <module>hystrix-service</module>
+
     </modules>
 
     <parent>

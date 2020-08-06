@@ -15,6 +15,11 @@ public class ProductServiceImpl implements IProductService {
 
     @Override
     public Product findById(Integer id) {
+//        try {
+//            Thread.sleep(1000);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
         return productDao.findById(id).get();
     }
 

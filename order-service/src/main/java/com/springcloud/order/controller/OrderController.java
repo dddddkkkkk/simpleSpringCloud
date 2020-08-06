@@ -1,10 +1,11 @@
 package com.springcloud.order.controller;
 
 import com.netflix.hystrix.contrib.javanica.annotation.DefaultProperties;
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import com.springcloud.constants.ServiceUrlConstant;
 import com.springcloud.entity.Product;
-import com.springcloud.order.hystrix.OrderCommand;
-import javafx.beans.DefaultProperty;
+
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.web.bind.annotation.*;
@@ -14,7 +15,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/order")
-@DefaultProperties(defaultFallback = "orderFallBack")
+//@DefaultProperties(defaultFallback = "orderFallBack")
 public class OrderController {
 
     //注入restTemplate对象
@@ -40,12 +41,16 @@ public class OrderController {
      * 2.使用服务名称替换ip地址
      */
     @RequestMapping(value = "/buy/{id}", method = RequestMethod.GET)
+    @HystrixCommand
     public String findById(@PathVariable Integer id) {
 //        Product product = null;
 //        String pro = "http://PRODUCT-SERVICE";
 //        product = restTemplate.getForObject(pro + "/product/" + id, Product.class);
-        String product = new OrderCommand(productFeginClient, id).execute();
-        return product;
+//        String product = new OrderCommand(productFeginClient, id).execute();
+
+        //FeginClient 负载均衡方式
+        Product product = productFeginClient.find(id);
+        return product.getCaption();
     }
 
 
@@ -57,4 +62,8 @@ public class OrderController {
                 Product.class);
         return forObject;
     }
+
+//    public String orderFallBack(Integer id) {
+//        return "熔断-> 降级方法";
+//    }
 }

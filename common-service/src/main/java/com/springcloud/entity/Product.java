@@ -1,6 +1,9 @@
 package com.springcloud.entity;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 
 import javax.persistence.Entity;
@@ -11,6 +14,9 @@ import java.math.BigDecimal;
 @Data
 @Entity
 @Table(name = "tb_product")
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class Product {
     @Id
     private Integer id;
