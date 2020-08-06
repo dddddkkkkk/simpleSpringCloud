@@ -1,0 +1,18 @@
+server:
+  port: 9041
+spring:
+  application:
+    name: zuul-service
+zuul:
+  routes:
+    product-service: /product-service/**
+    order-service: /order-service/**
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://127.0.0.1:9000/eureka
+      registry-fetch-interval-seconds: 5
+  instance:
+    preferIpAddress: true
+    ip-address: 127.0.0.1
+
