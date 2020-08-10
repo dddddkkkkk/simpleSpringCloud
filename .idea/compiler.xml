@@ -10,6 +10,7 @@
         <module name="common-service" />
         <module name="product-service" />
         <module name="order-service" />
+        <module name="sentinel-service" />
         <module name="eureka-service" />
         <module name="zuul-service" />
       </profile>
@@ -28,6 +29,7 @@
       <module name="hystrix-service" options="-parameters" />
       <module name="order-service" options="-parameters" />
       <module name="product-service" options="-parameters" />
+      <module name="sentinel-service" options="-parameters" />
       <module name="zuul-service" options="-parameters" />
     </option>
   </component>

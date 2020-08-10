@@ -1,0 +1,8 @@
+server:
+  port: 9035
+
+spring:
+  cloud:
+    sentinel:
+      transport:
+        dashboard: localhost:9035
