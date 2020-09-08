@@ -5,4 +5,4 @@ spring:
   cloud:
     sentinel:
       transport:
-        dashboard: localhost:9035
+        dashboard: localhost:9036

@@ -1,69 +1,62 @@
 package com.springcloud.order.controller;
 
-import com.netflix.hystrix.contrib.javanica.annotation.DefaultProperties;
-import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
-import com.springcloud.constants.ServiceUrlConstant;
+
+import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.springcloud.entity.Product;
-
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cloud.client.discovery.DiscoveryClient;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/order")
-//@DefaultProperties(defaultFallback = "orderFallBack")
 public class OrderController {
 
-    //注入restTemplate对象
-    @Autowired
-    private RestTemplate restTemplate;
+	@Autowired
+	private RestTemplate restTemplate;
 
-    /**
-     * 注入DiscoveryClient :
-     * springcloud提供的获取原数组的工具类
-     * 调用方法获取服务的元数据信息
-     */
-    @Autowired
-    private DiscoveryClient discoveryClient;
+	/**
+	 * @SentinelResource
+	 *      blockHandler : 声明熔断时调用的降级方法
+	 *      fallback : 抛出异常执行的降级方法
+	 *      value : 自定义的资源名称
+	 *          * 不设置:当前全类名.方法名
+	 */
+	@SentinelResource(value="orderFindById",blockHandler = "orderBlockHandler",fallback = "orderFallback")
+	@RequestMapping(value = "/buy/{id}",method = RequestMethod.GET)
+	public Product findById(@PathVariable Long id) {
+		if(id != 1) {
+			throw new RuntimeException("错误");
+		}
+		return restTemplate.getForObject("http://service-product/product/1",Product.class);
+	}
 
+	@SentinelResource(value="orderFindById2",blockHandler = "orderBlockHandler",fallback = "orderFallback")
+	@RequestMapping(value = "/buy2/{id}",method = RequestMethod.GET)
+	public Product findById2(@PathVariable Long id) {
+		if(id != 1) {
+			throw new RuntimeException("错误");
+		}
+		return restTemplate.getForObject("http://service-product/product/1",Product.class);
+	}
+	/**
+	 * 定义降级逻辑
+	 *  hystrix和sentinel
+	 *      熔断执行的降级方法
+	 *      抛出异常执行的降级方法
+	 */
+	public Product orderBlockHandler(Long id) {
+		Product product = new Product();
+		product.setProductName("触发熔断的降级方法");
+		return product;
+	}
 
-    @Autowired
-    ProductFeginClient productFeginClient;
+	public Product orderFallback(Long id) {
+		Product product = new Product();
+		product.setProductName("抛出异常执行的降级方法");
+		return product;
+	}
 
-
-    /**
-     * 基于ribbon的形式调用远程微服务
-     * 1.使用@LoadBalanced声明RestTemplate
-     * 2.使用服务名称替换ip地址
-     */
-    @RequestMapping(value = "/buy/{id}", method = RequestMethod.GET)
-    @HystrixCommand
-    public String findById(@PathVariable Integer id) {
-//        Product product = null;
-//        String pro = "http://PRODUCT-SERVICE";
-//        product = restTemplate.getForObject(pro + "/product/" + id, Product.class);
-//        String product = new OrderCommand(productFeginClient, id).execute();
-
-        //FeginClient 负载均衡方式
-        Product product = productFeginClient.find(id);
-        return product.getCaption();
-    }
-
-
-    @PostMapping("/id")
-    @ResponseBody
-    public Product order(@PathVariable("id") Integer id) {
-        Product forObject = restTemplate.getForObject(ServiceUrlConstant.PRODUCT_URL.concat("/")
-                        .concat(id + ""),
-                Product.class);
-        return forObject;
-    }
-
-//    public String orderFallBack(Integer id) {
-//        return "熔断-> 降级方法";
-//    }
 }
